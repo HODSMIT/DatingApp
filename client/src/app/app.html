@@ -1,0 +1,15 @@
+<div class="card bg-white bg-base-100 w-1/2 mx-auto p-10 mt-10 shadow-xl">
+<h1 class ="text-3xl text-red-500 font">{{ title }}</h1>
+@if (membersList.length > 0) {
+  <ul class="list">
+    @for (member of membersList; track member.id) {
+      <li class="list-row items-center">
+        <img src="/User.png" alt="user avatar" class="size-12 rounded-box">
+        <div>{{member.displayName}}</div>
+      </li>
+    }
+  </ul>
+} @else {
+  <p>Loading members or no data available.</p>
+}
+</div>
