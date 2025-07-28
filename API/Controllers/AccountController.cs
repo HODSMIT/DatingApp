@@ -48,7 +48,7 @@ namespace API.Controllers
             var user = await context.Users.SingleOrDefaultAsync(x => x.Email == logdto.email);
             if (user == null)
             {
-                return Unauthorized("Invalid Email address");
+                 return Unauthorized(new { message = "Invalid Email address" });
             }
             using var hmac = new HMACSHA512(user.PasswordSalt);
 
