@@ -2,13 +2,14 @@ import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalE
 import { provideRouter, withViewTransitions } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideHttpClient, withFetch } from '@angular/common/http'; // ✅ withFetch import
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http'; // ✅ withFetch import
 import { InitService } from '../Core/service/init-service';
 import { lastValueFrom } from 'rxjs';
+import { errorInterceptor } from '../Core/interceptors/error-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-  provideHttpClient(withFetch()), // ✅ Keep this
+  provideHttpClient(withFetch(),withInterceptors([errorInterceptor])), // ✅ Keep this
   provideBrowserGlobalErrorListeners(),
   provideZonelessChangeDetection(),
   provideRouter(routes,withViewTransitions()),

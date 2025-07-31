@@ -5,6 +5,9 @@ import { MemberDetailed } from '../features/members/member-detailed/member-detai
 import { Lists } from '../features/lists/lists';
 import { Messages } from '../features/messages/messages';
 import { authGuard } from '../Core/guards/auth-guard';
+import { TestError } from '../features/test-error/test-error';
+import { NotFound } from '../Shared/error/not-found/not-found';
+import { ServerError } from '../Shared/error/server-error/server-error';
 
 export const routes: Routes = [
     {path: '',component: Home},
@@ -20,7 +23,8 @@ export const routes: Routes = [
 
         ]
     },
-    
-    {path: '**',component: Home},
+    {path:'error',component:TestError},
+    {path:'server-error',component:ServerError},
+    {path: '**',component: NotFound},
     
 ];
