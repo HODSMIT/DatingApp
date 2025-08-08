@@ -21,6 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 builder.Services.AddCors();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IMemberReporsitory, MemberRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     var tokenKey = builder.Configuration["TokenKey"] ?? throw new Exception("Token Key Not Found - Program.cs");
@@ -47,4 +48,23 @@ app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localho
 
 app.MapControllers();
 
+
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+try
+{
+    var context = services.GetRequiredService<AppDbContext>();
+    await context.Database.MigrateAsync();
+    await Seed.SeedUser(context);
+}
+catch (Exception Ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    //throw;
+    logger.LogError(Ex, "An Error Occured during Migrations");
+
+}
+
+
 app.Run();
+
