@@ -10,7 +10,7 @@ export type User = {
 
 export type LoginCreds = {
     email: string;
-    password: string;
+    password: string;   
 }
 
 export type RegisterCreds = {

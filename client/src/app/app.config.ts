@@ -6,10 +6,11 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { InitService } from '../Core/service/init-service';
 import { lastValueFrom } from 'rxjs';
 import { errorInterceptor } from '../Core/interceptors/error-interceptor';
+import { jwtInterceptor } from '../Core/interceptors/jwt-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-  provideHttpClient(withFetch(),withInterceptors([errorInterceptor])), // ✅ Keep this
+  provideHttpClient(withFetch(),withInterceptors([errorInterceptor,jwtInterceptor])), // ✅ Keep this
   provideBrowserGlobalErrorListeners(),
   provideZonelessChangeDetection(),
   provideRouter(routes,withViewTransitions()),

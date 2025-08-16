@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../Core/service/account-service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastService } from '../../Core/service/toast-service';
+import { themes } from '../theme';
 
 @Component({
   selector: 'app-nav',
@@ -10,14 +11,35 @@ import { ToastService } from '../../Core/service/toast-service';
   templateUrl: './nav.html',
   styleUrl: './nav.css'
 })
-export class Nav {
+export class Nav implements OnInit {
+  
   protected accountservice = inject(AccountService);
   private router = inject(Router);
   private toast = inject(ToastService);
   protected creds:any
   = {}
+  protected selectedTheme = signal<string>(localStorage.getItem('theme') || 'light');
+  protected themes = themes;
+
   protected loggedIn = signal(false)
   
+
+  ngOnInit(): void {
+    document.documentElement.setAttribute('data-theme',this.selectedTheme());
+  }
+  handleSelectTheme(theme: string){
+
+    this.selectedTheme.set(theme);
+    localStorage.setItem('theme',theme);
+    document.documentElement.setAttribute('data-theme',theme);
+    const elem = document.activeElement as HTMLDivElement;
+    if(elem){
+
+      elem.blur();
+
+    }
+
+  }
   login()
   {
     this.accountservice.login(this.creds).subscribe({
