@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using API.DATA;
+using API.Helper;
 using API.Interface;
 using API.Middleware;
 using API.Services;
@@ -21,7 +22,10 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 builder.Services.AddCors();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IMemberReporsitory, MemberRepository>();
+builder.Services.Configure<CloudinarySettings>(builder.Configuration
+.GetSection("CloudinarySettings"));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     var tokenKey = builder.Configuration["TokenKey"] ?? throw new Exception("Token Key Not Found - Program.cs");
