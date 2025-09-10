@@ -30,7 +30,15 @@ namespace API.Controllers
                 DisplayName = RegisterDto.DisplayName,
                 Email = RegisterDto.Email,
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(RegisterDto.Password)),
-                PasswordSalt = hmac.Key
+                PasswordSalt = hmac.Key,
+                Member = new Member
+                {
+                    DisplayName = RegisterDto.DisplayName,
+                    Gender = RegisterDto.Gender,
+                    City = RegisterDto.City,
+                    Country = RegisterDto.Country,
+                    DateofBirth = RegisterDto.DateOfBirth
+                }
 
             };
 
