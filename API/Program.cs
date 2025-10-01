@@ -37,6 +37,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateAudience = false
     };
 });
+builder.Services.AddScoped<LogUserActivity>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

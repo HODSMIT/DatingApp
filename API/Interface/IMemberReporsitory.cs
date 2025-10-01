@@ -1,5 +1,6 @@
 using System;
 using API.Entities;
+using API.Helper;
 
 namespace API.Interface;
 
@@ -8,7 +9,7 @@ public interface IMemberReporsitory
     void Update(Member member);
     Task<bool> SaveAllAsync();
 
-    Task<IReadOnlyList<Member>> GetMembersAync();
+    Task<PaginationResult<Member>> GetMembersAync(MemberParams memberParams);
 
     Task<Member?> GetMemberByIdAsync(string id);
 

@@ -3,6 +3,7 @@ using API.DATA;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helper;
 using API.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,12 @@ namespace API.Controllers
     {
         [HttpGet]
 
-        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers()
+        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers(
+            [FromQuery] MemberParams memberParams)
         {
+            memberParams.CurrentmemberId = User.GetMemberById();
             //var member = await context.Users.ToListAsync();
-            return Ok(await memberReporsitory.GetMembersAync());
+            return Ok(await memberReporsitory.GetMembersAync(memberParams));
         }
 
         [HttpGet("{Id}")]  // localhost:5001/api/smit -1
