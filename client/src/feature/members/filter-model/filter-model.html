@@ -9,16 +9,16 @@
                     <input type="reset" value="x" class="btn btn-square">
                     <input type="radio" 
                     class="btn" 
-                    [(ngModel)] = "membersParam.gender"
+                    [(ngModel)] = "membersParam().gender"
                     name="gender"
                     aria-label="Female"
-                    value="male">
+                    value="female">
                     <input type="radio" 
                     class="btn" 
-                    [(ngModel)] = "membersParam.gender"
-                    aria-label="Male"
+                    [(ngModel)] = "membersParam().gender"
+                    aria-label="Male" 
                     name="gender"
-                    value="female">
+                    value="Male">
                 </form>
             </label>
             <label class="flex justify-between items-center">
@@ -28,14 +28,14 @@
                     type="number"
                     class="input w-20"
                     [min] = "18"
-                    [(ngModel)] = "membersParam.minAge"
+                    [(ngModel)] = "membersParam().minAge"
                     name="minAge"
                     (change)="onMinAgeChange()">
                     <input 
                     type="number"
                     class="input w-20"
-                    [min] = "membersParam.minAge || 18"
-                    [(ngModel)] = "membersParam.maxAge"
+                    [min] = "membersParam().minAge || 18"
+                    [(ngModel)] = "membersParam().maxAge"
                     name="maxAge"
                     (change)="onMaxAgeChange()">
 
@@ -43,7 +43,7 @@
             </label>
             <label class="flex justify-between items-center">
               <span class="font-semibold">Order by: </span>
-              <select name="orderBy" class="select" [(ngModel)] ="membersParam.orderBy">
+              <select name="orderBy" class="select" [(ngModel)] ="membersParam().orderBy">
                 <option disabled selected>orderBy</option>
                 <option value="created">Newest members</option>
                 <option value="lastActive">Last Active</option>

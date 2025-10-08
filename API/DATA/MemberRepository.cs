@@ -29,11 +29,11 @@ public class MemberRepository(AppDbContext context) : IMemberReporsitory
             query = query.Where(x => x.Gender == memberParams.Gender);    
         }
 
-        //var mindob = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.Maxage - 1));
+        var mindob = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.Maxage - 1));
 
-        //var maxdob = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MinAge));
+        var maxdob = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MinAge));
 
-        //query = query.Where(x => x.DateofBirth >= mindob && x.DateofBirth <= maxdob);
+        query = query.Where(x => x.DateOfBirth >= mindob && x.DateOfBirth <= maxdob);
 
         query = memberParams.OrderBy switch
         {

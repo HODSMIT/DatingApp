@@ -37,7 +37,7 @@ namespace API.Controllers
                     Gender = RegisterDto.Gender,
                     City = RegisterDto.City,
                     Country = RegisterDto.Country,
-                    DateofBirth = RegisterDto.DateOfBirth
+                    DateOfBirth = RegisterDto.DateOfBirth
                 }
 
             };

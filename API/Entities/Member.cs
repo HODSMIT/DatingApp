@@ -9,7 +9,7 @@ public class Member
 {
     public string Id { get; set; } = null!;
 
-    public DateOnly DateofBirth { get; set; }
+    public DateOnly DateOfBirth { get; set; }
 
     public string? ImageUrl { get; set; }
 

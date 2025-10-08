@@ -46,7 +46,7 @@ export class MemberDetailed implements OnInit{
   //   {
   //     return;
   //   }
-  //   return this.memberservice.getMember(id);
+  //   return this.memberservice.getMember(id); 
   // }
 
 }
