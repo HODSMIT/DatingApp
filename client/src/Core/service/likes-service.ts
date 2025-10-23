@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Member } from '../../app/types/Member';
 
 @Injectable({
@@ -17,8 +17,12 @@ export class LikesService {
     return this.http.post(`${this.basUrl}likes/${targetmemberId}`,{});
   }
 
-  getLikes(predicate : string)
+  getLikes(predicate : string,pageNumber:number,pagesize:number)
   {
+      let params = new HttpParams();
+      params = params.append('pageNumber',pageNumber);
+      params = params.append('pagesize',pagesize);
+      params = params.append('predicate',predicate);
       return this.http.get<Member[]>(this.basUrl + 'likes?predicate=' + predicate);
   }
 
