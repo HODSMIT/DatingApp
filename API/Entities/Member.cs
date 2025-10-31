@@ -38,6 +38,11 @@ public class Member
     [JsonIgnore]
     public List<MemberLikes> LikeMembers { get; set; } = [];
 
+    [JsonIgnore]
+    public List<Message> MessageSent { get; set; } = [];
+
+    [JsonIgnore]
+    public List<Message> MessageReceived { get; set; } = [];
 
     [JsonIgnore]
     [ForeignKey(nameof(Id))]

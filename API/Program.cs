@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using API.DATA;
+using API.DTOs;
 using API.Helper;
 using API.Interface;
 using API.Middleware;
@@ -24,6 +25,7 @@ builder.Services.AddCors();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IMemberReporsitory, MemberRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<ILikesRepository, LikesRepository>();
 builder.Services.Configure<CloudinarySettings>(builder.Configuration
 .GetSection("CloudinarySettings"));
