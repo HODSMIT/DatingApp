@@ -3,22 +3,14 @@ using API.DTOs;
 using API.Entities;
 using API.Helper;
 
-namespace API.Interface;
+namespace API.Interfaces;
 
 public interface IMessageRepository
 {
-
     void AddMessage(Message message);
     void DeleteMessage(Message message);
-
     Task<Message?> GetMessage(string messageId);
-
-    Task<PaginationResult<MessageDto>> GetMessagesForMember(MemberParam messageParams);
-
-    Task<IReadOnlyList<MessageDto>> GetMessagesThread(string currentMemberId, string receipienId);
-
-
+    Task<PaginationResult<MessageDto>> GetMessagesForMember(MessageParam messageParams);
+    Task<IReadOnlyList<MessageDto>> GetMessageThread(string currentMemberId, string recipientId);
     Task<bool> SaveAllAsync();
-
-
 }

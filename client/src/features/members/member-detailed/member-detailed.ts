@@ -1,10 +1,10 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { MemberService } from '../../../Core/service/member-service';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, Observable } from 'rxjs';
 import { Member } from '../../../app/types/Member';
 import { AgePipe } from '../../../Core/pipes/age-pipe';
 import { AccountService } from '../../../Core/service/account-service';
+import { MemberService } from '../../../Core/service/member-service';
 
 @Component({
   selector: 'app-member-detailed',
