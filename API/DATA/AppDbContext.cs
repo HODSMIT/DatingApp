@@ -1,14 +1,14 @@
 using System;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.DATA;
 
-public class AppDbContext(DbContextOptions options) : DbContext(options)
+public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser>(options)
 {
-    public DbSet<AppUser> Users { get; set; }
-
     public DbSet<Member> Members { get; set; }
 
     public DbSet<Photo> Photos { get; set; }
@@ -21,6 +21,13 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<IdentityRole>()
+        .HasData(
+            new IdentityRole { Id = "member-id", Name = "Member", NormalizedName = "MEMBER" },
+            new IdentityRole { Id = "modetator-id", Name = "Moderator", NormalizedName = "MODERATOR" },
+            new IdentityRole { Id = "admin-id", Name = "Admin", NormalizedName = "ADMIN" }
+        );
         modelBuilder.Entity<Message>().HasOne(x => x.Recipient).WithMany(m => m.MessageReceived).OnDelete(DeleteBehavior.Restrict);
 
 

@@ -20,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     return new Promise<void>((resolve) => {
       setTimeout(async () =>{
         try{
-      return lastValueFrom(initservice.Init());
+      await lastValueFrom(initservice.Init());
     }
     finally
     {
