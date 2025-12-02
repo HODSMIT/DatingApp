@@ -128,13 +128,13 @@ namespace API.Controllers
 
             var photo = member.Photos.SingleOrDefault(x => x.Id == photoid);
 
-            if (member.ImageUrl == photo.Url)
+             if (member.ImageUrl == photo?.Url)
             {
                 return BadRequest("Cannot Set This as main image");
             }
-
-            member.ImageUrl = photo.Url;
-            member.User.ImageUrl = photo.Url;
+ 
+            member.ImageUrl = photo?.Url;
+            member.User.ImageUrl = photo?.Url;
 
             if (await memberReporsitory.SaveAllAsync())
             {

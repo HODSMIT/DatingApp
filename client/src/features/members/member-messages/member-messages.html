@@ -6,8 +6,11 @@
                 [class.chat-start]="!message.currentUserSender"
                 [class.chat-end]="message.currentUserSender"
             >
-            <div class="chat-image avatar"
-            [class.avatar-online]="presenceService.onlineUsers().includes(message.senderId || message.receipientId)">
+            <div 
+                class="chat-image avatar"
+                [class.avatar-online]="presenceService.onlineUsers()
+                    .includes(message.senderId || message.receipientId)"
+            >
                 <div class="w-10 rounded-full">
                 <img
                     alt="image of user"
@@ -21,7 +24,7 @@
             </div>
             <div class="chat-bubble">{{message.content}}</div>
             @if (message.currentUserSender && message.dataRead) {
-                <div class="chat-footer opacity-50">Seen {{message.dataRead | timeAgo}}</div>
+                <div class="chat-footer opacity-50">Seen {{message.dataRead| timeAgo}}</div>
             } @else if (message.currentUserSender && !message.dataRead) {
                 <div class="chat-footer opacity-50">Not read</div>
             } @else {

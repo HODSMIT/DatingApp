@@ -25,7 +25,7 @@ export class MemberMessages implements OnInit {
 
   constructor(){
     effect(() => {
-      const curreentMessages = this.messages();
+      const curreentMessages = this.messageService.messageThread();
       if(curreentMessages.length > 0)
       {
           this.scrollToBottom();
