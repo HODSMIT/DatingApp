@@ -14,7 +14,17 @@ export class LikesService {
 
   toggleLike(targetmemberId: string)
   {
-    return this.http.post(`${this.basUrl}likes/${targetmemberId}`,{});
+    return this.http.post(`${this.basUrl}likes/${targetmemberId}`,{}).subscribe({
+      next: () =>{
+        if(this.likeIds().includes(targetmemberId)){
+          this.likeIds.update(ids => ids.filter(x => x! == targetmemberId))
+        }
+        else
+        {
+          this.likeIds.update(ids => [...ids,targetmemberId])
+        }
+      }
+    })
   }
 
   getLikes(predicate : string,pageNumber:number,pagesize:number)

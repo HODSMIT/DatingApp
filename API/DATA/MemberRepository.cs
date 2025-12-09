@@ -52,10 +52,6 @@ public class MemberRepository(AppDbContext context) : IMemberReporsitory
         .ToListAsync();
     }
 
-    public async Task<bool> SaveAllAsync()
-    {
-        return await context.SaveChangesAsync() > 0;
-    }
 
     public void Update(Member member)
     {

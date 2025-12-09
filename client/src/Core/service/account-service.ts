@@ -78,9 +78,17 @@ export class AccountService {
   logout()
   {
     //localStorage.removeItem('user');
-    localStorage.removeItem('filters');
-    this.CurrentUser.set(null);
-    this.likesService.clearLikeIds();
+    this.http.post(this.baseUrl + 'account/logout',{},{withCredentials:true}).subscribe({
+      next:()=>{
+        localStorage.removeItem('filters');
+        this.likesService.clearLikeIds();
+
+        this.CurrentUser.set(null);
+        this.presenceService.stopHubConnection();
+
+      }
+    })
+    
 
   }
 

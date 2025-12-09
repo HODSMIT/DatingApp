@@ -1,7 +1,6 @@
-using System.Net.Http.Headers;
 using System.Text;
+using API.Data;
 using API.DATA;
-using API.DTOs;
 using API.Entities;
 using API.Helper;
 using API.Interface;
@@ -16,26 +15,22 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// Add services to the container.
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
 builder.Services.AddCors();
-builder.Services.AddSignalR();
-builder.Services.AddSingleton<PresenceTracker>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
-builder.Services.AddScoped<IMemberReporsitory, MemberRepository>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-builder.Services.AddScoped<ILikesRepository, LikesRepository>();
+builder.Services.AddScoped<IUnitofWork,UnitOfWork>();
 builder.Services.AddScoped<LogUserActivity>();
-
-builder.Services.Configure<CloudinarySettings>(
-    builder.Configuration.GetSection("CloudinarySettings")
-);
+builder.Services.Configure<CloudinarySettings>(builder.Configuration
+    .GetSection("CloudinarySettings"));
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<PresenceTracker>();
 
 builder.Services.AddIdentityCore<AppUser>(opt =>
 {
@@ -45,40 +40,35 @@ builder.Services.AddIdentityCore<AppUser>(opt =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<AppDbContext>();
 
-// JWT Auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
-{
-    var tokenKey = builder.Configuration["TokenKey"]
-        ?? throw new Exception("Token Key Not Found - Program.cs");
-
-    options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-
-    // IMPORTANT: allow JWTs to be passed via WebSockets for SignalR
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
+        var tokenKey = builder.Configuration["TokenKey"]
+            ?? throw new Exception("Token key not found - Program.cs");
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            var accessToken = context.Request.Query["access_token"];
-            var path = context.HttpContext.Request.Path;
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
 
-            // This MUST match MapHub route
-            if (!string.IsNullOrEmpty(accessToken) &&
-                path.StartsWithSegments("/hubs"))
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
             {
-                context.Token = accessToken;
-            }
+                var accessToken = context.Request.Query["access_token"];
 
-            return Task.CompletedTask;
-        }
-    };
-});
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"))
@@ -86,39 +76,35 @@ builder.Services.AddAuthorizationBuilder()
 
 var app = builder.Build();
 
-// ORDER IS IMPORTANT
+// Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionsMiddleware>();
 app.UseCors(x => x
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials()
-    .WithOrigins("http://localhost:4200", "https://localhost:4200")
-);
+    .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<ExceptionsMiddleware>();
-
 app.MapControllers();
-
-// FIXED hub path
-app.MapHub<PresenceHub>("/hubs/presence");
-app.MapHub<Messagehub>("/hubs/messages");
+app.MapHub<PresenceHub>("hubs/presence");
+app.MapHub<MessageHub>("hubs/messages");
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
-
 try
 {
     var context = services.GetRequiredService<AppDbContext>();
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     await context.Database.MigrateAsync();
+    await context.Connections.ExecuteDeleteAsync();
     await Seed.SeedUser(userManager);
 }
 catch (Exception ex)
 {
     var logger = services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, "An error occurred during migrations");
+    logger.LogError(ex, "An error occured during migration");
 }
 
 app.Run();

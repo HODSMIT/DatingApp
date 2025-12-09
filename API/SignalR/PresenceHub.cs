@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using API.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -10,32 +11,27 @@ public class PresenceHub(PresenceTracker presenceTracker) : Hub
 {
     public override async Task OnConnectedAsync()
     {
-        await presenceTracker.UserConnected(Context.User.GetMemberById() , Context.ConnectionId);
-        await Clients.Others.SendAsync(
-            "UserOnline",
-            GetUserId()
-        );
-        var currentUsers = await presenceTracker.GetOnlineUser();
-        await Clients.All.SendAsync("GetOnline",currentUsers);
+        await presenceTracker.UserConnected(GetUserId(), Context.ConnectionId);
+        await Clients.Others.SendAsync("UserOnline", GetUserId());
+
+        var currentUsers = await presenceTracker.GetOnlineUsers();
+        await Clients.All.SendAsync("GetOnlineUsers", currentUsers);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
+        await presenceTracker.UserDisconnected(GetUserId(), Context.ConnectionId);
+        await Clients.Others.SendAsync("UserOffline", GetUserId());
 
-        await presenceTracker.UserDisconnect(GetUserId(),Context.ConnectionId);
-        
-        await Clients.Others.SendAsync(
-            "UserOffline",
-            GetUserId()
-        );
-        var currentUsers = await presenceTracker.GetOnlineUser();
-        await Clients.All.SendAsync("GetOnline",currentUsers);
+        var currentUsers = await presenceTracker.GetOnlineUsers();
+        await Clients.All.SendAsync("GetOnlineUsers", currentUsers);
+
         await base.OnDisconnectedAsync(exception);
     }
 
-
     private string GetUserId()
     {
-        return Context.User?.GetMemberById() ?? throw new HubException("Cannot get Member id");
+        return Context.User?.GetMemberById()
+            ?? throw new HubException("Cannot get member id");
     }
 }

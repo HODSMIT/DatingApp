@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Authorize]
-    public class MembersController(IMemberReporsitory memberReporsitory, IPhotoService photoService) : BaseController
+    public class MembersController(IUnitofWork uow, IPhotoService photoService) : BaseController
     {
         [HttpGet]
 
@@ -20,14 +20,14 @@ namespace API.Controllers
         {
             memberParams.CurrentmemberId = User.GetMemberById();
             //var member = await context.Users.ToListAsync();
-            return Ok(await memberReporsitory.GetMembersAync(memberParams));
+            return Ok(await uow.MemberReporsitory.GetMembersAync(memberParams));
         }
 
         [HttpGet("{Id}")]  // localhost:5001/api/smit -1
 
         public async Task<ActionResult<Member>> GetMembers(string Id)
         {
-            var member = await memberReporsitory.GetMemberByIdAsync(Id);
+            var member = await uow.MemberReporsitory.GetMemberByIdAsync(Id);
 
 
             if (member == null)
@@ -42,14 +42,14 @@ namespace API.Controllers
         [HttpGet("{id}/photos")]
         public async Task<ActionResult<IReadOnlyList<Photo>>> GetMemberPhotos(string id)
         {
-            return Ok(await memberReporsitory.GetPhotosForMemberAsync(id));
+            return Ok(await uow.MemberReporsitory.GetPhotosForMemberAsync(id));
         }
 
         [HttpPut]
         public async Task<ActionResult> UpdateMember(MemberUpdatedto memberUpdatedto)
         {
             var memberId = User.GetMemberById();
-            var member = await memberReporsitory.GetMemberForUpdate(memberId);
+            var member = await uow.MemberReporsitory.GetMemberForUpdate(memberId);
 
             if (member == null)
             {
@@ -64,7 +64,7 @@ namespace API.Controllers
 
             //memberReporsitory.Update(member);//optional 
 
-            if (await memberReporsitory.SaveAllAsync())
+            if (await uow.Complete())
             {
                 return NoContent();
             }
@@ -75,7 +75,7 @@ namespace API.Controllers
         [HttpPost("add-photo")]
         public async Task<ActionResult<Photo>> AddPhotot([FromForm] IFormFile File)
         {
-            var member = await memberReporsitory.GetMemberForUpdate(User.GetMemberById());
+            var member = await uow.MemberReporsitory.GetMemberForUpdate(User.GetMemberById());
 
             if (member == null)
             {
@@ -106,7 +106,7 @@ namespace API.Controllers
 
             member.Photos.Add(Photo);
 
-            if (await memberReporsitory.SaveAllAsync())
+            if (await uow.Complete())
             {
                 return Photo;
             }
@@ -120,7 +120,7 @@ namespace API.Controllers
         public async Task<ActionResult> SetMainPhoto(int photoid)
         {
 
-            var member = await memberReporsitory.GetMemberForUpdate(User.GetMemberById());
+            var member = await uow.MemberReporsitory.GetMemberForUpdate(User.GetMemberById());
             if (member == null)
             {
                 return BadRequest("Cannot Get member from token");
@@ -136,7 +136,7 @@ namespace API.Controllers
             member.ImageUrl = photo?.Url;
             member.User.ImageUrl = photo?.Url;
 
-            if (await memberReporsitory.SaveAllAsync())
+            if (await uow.Complete())
             {
                 return NoContent();
             }
@@ -149,7 +149,7 @@ namespace API.Controllers
 
         public async Task<ActionResult> DeletePhoto(int photoId)
         {
-            var member = await memberReporsitory.GetMemberForUpdate(User.GetMemberById());
+            var member = await uow.MemberReporsitory.GetMemberForUpdate(User.GetMemberById());
             if (member == null)
             {
                 return BadRequest("Cannot Get member from token");
@@ -174,7 +174,7 @@ namespace API.Controllers
 
                 member.Photos.Remove(photo);
 
-                if (await memberReporsitory.SaveAllAsync())
+                if (await uow.Complete())
                 {
                     return Ok();
 

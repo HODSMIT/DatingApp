@@ -7,7 +7,7 @@ namespace API.Interface;
 public interface IMemberReporsitory
 {
     void Update(Member member);
-    Task<bool> SaveAllAsync();
+    //Task<bool> SaveAllAsync();
 
     Task<PaginationResult<Member>> GetMembersAync(MemberParams memberParams);
 

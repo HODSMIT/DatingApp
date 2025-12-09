@@ -7,6 +7,7 @@ using API.Entities;
 using API.Extensions;
 using API.Interface;
 using API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -112,6 +113,20 @@ namespace API.Controllers
 
 
 
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<ActionResult> Logput()
+        {
+            await userManager.Users.Where(x=>x.Id == User.GetMemberById())
+            .ExecuteUpdateAsync(setters => setters
+            .SetProperty(x=>x.RefreshToken,_ => null)
+            .SetProperty(x => x.RefreshTokenExpiry, _ => null));
+
+            Response.Cookies.Delete("refershToken");
+
+            return Ok(); 
         }
 
 

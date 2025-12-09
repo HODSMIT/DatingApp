@@ -25,6 +25,8 @@ export class Nav implements OnInit {
   protected themes = themes;
 
   protected loggedIn = signal(false)
+
+  protected loading = signal(false)
   
 
   ngOnInit(): void {
@@ -43,8 +45,18 @@ export class Nav implements OnInit {
     }
 
   }
+  handleSelectUserItem()
+  {
+    const elem = document.activeElement as HTMLDivElement;
+    if(elem){
+
+      elem.blur();
+
+    }
+  }
   login()
   {
+    this.loading.set(true); 
     this.accountservice.login(this.creds).subscribe({
       next: () => {
         //console.log(result);
@@ -55,7 +67,8 @@ export class Nav implements OnInit {
       error: error => { 
         console.log("Login failed", error);
           this.toast.error(error.error.message)        
-      } 
+      } ,
+      complete:() => this.loading.set(false)
     });
   }
   logout()

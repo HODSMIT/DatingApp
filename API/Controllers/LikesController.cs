@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class LikesController(ILikesRepository likesRepository) : BaseController
+public class LikesController(IUnitofWork uow) : BaseController
 {
     [HttpPost("{targerMemberId}")]
     public async Task<ActionResult> ToggleLike(string targerMemberId)
@@ -17,7 +17,7 @@ public class LikesController(ILikesRepository likesRepository) : BaseController
         {
             return BadRequest("You Cannot like yourself");
         }
-        var existingLikes = await likesRepository.GetMemberLike(sourceMemberId, targerMemberId);
+        var existingLikes = await uow.LikesRepository.GetMemberLike(sourceMemberId, targerMemberId);
 
         if (existingLikes == null)
         {
@@ -28,14 +28,14 @@ public class LikesController(ILikesRepository likesRepository) : BaseController
 
             };
 
-            likesRepository.AddLike(like);
+            uow.LikesRepository.AddLike(like);
         }
         else
         {
-            likesRepository.DeleteLikes(existingLikes);
+            uow.LikesRepository.DeleteLikes(existingLikes);
         }
 
-        if (await likesRepository.SaveAllChanges())
+        if (await uow.Complete())
         {
             return Ok();
         }
@@ -48,14 +48,14 @@ public class LikesController(ILikesRepository likesRepository) : BaseController
     [HttpGet("list")]
     public async Task<ActionResult<IReadOnlyList<string>>> GetCurrentMemberLikeIds()
     {
-        return Ok(await likesRepository.GetCurrentMemberLikesId(User.GetMemberById()));
+        return Ok(await uow.LikesRepository.GetCurrentMemberLikesId(User.GetMemberById()));
     }
 
     [HttpGet]
     public async Task<ActionResult<PaginationResult<Member>>> GetMemberLikes([FromQuery] LikesParam likesParam)
     {
         likesParam.MemberId = User.GetMemberById();
-        var members = await likesRepository.GetMemberLikes(likesParam);
+        var members = await uow.LikesRepository.GetMemberLikes(likesParam);
         return Ok(members);
     }
 
